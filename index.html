@@ -1,50 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>PHAT ASS SQUAD Calendar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>💖 PHAT ASS SQUAD Calendar 💖</h1>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PHAT ASS SQUAD Calendar</title>
+    <style>
+      body {
+        font-family: 'Quicksand', sans-serif;
+        background: #ffe6f0;
+        color: #4c1f3d;
+        margin: 0;
+        padding: 0;
+      }
 
-    <div class="top-controls">
-      <label for="userSelect">I am:</label>
-      <select id="userSelect">
-        <option>Rakshika</option>
-        <option>Shreya</option>
-        <option>Dhruti</option>
-        <option>Yaamini</option>
-        <option>Medha</option>
-      </select>
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+
+      h1 {
+        color: #ff69b4;
+        text-align: center;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 10px 0;
+      }
+
+      #calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+      }
+
+      .day-name {
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .day {
+        border: 1px solid #ffb6c1;
+        border-radius: 8px;
+        padding: 5px;
+        text-align: center;
+        cursor: pointer;
+        background: #fff;
+      }
+
+      .day.selected {
+        border: 2px solid #ff4081;
+        background: #ffe4ec;
+      }
+
+      .day.free { background-color: #ffe0f0; }
+      .day.busy { background-color: #ffcdd2; }
+      .day.maybe { background-color: #fff3cd; }
+
+      button {
+        background: #ff69b4;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #ff4081;
+      }
+
+      #groupView {
+        margin-top: 20px;
+        font-size: 0.9rem;
+        max-height: 300px;
+        overflow-y: auto;
+        text-align: left;
+        padding: 10px;
+        background: #fdf1f4;
+        border-radius: 8px;
+      }
+
+      select {
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>💖 PHAT ASS SQUAD Calendar 💖</h1>
+
+      <div class="controls">
+        <label for="userSelect">I am:</label>
+        <select id="userSelect">
+          <option>Rakshika</option>
+          <option>Shreya</option>
+          <option>Dhruti</option>
+          <option>Yaamini</option>
+          <option>Medha</option>
+        </select>
+      </div>
+
+      <div class="controls">
+        <button id="prevBtn">⏮️</button>
+        <span id="monthLabel">Month YYYY</span>
+        <button id="nextBtn">⏭️</button>
+      </div>
+
+      <div id="calendar"></div>
+
+      <div class="controls">
+        <label for="statusSelect">Set status:</label>
+        <select id="statusSelect">
+          <option value="free">✅ Free</option>
+          <option value="maybe">🤔 Maybe</option>
+          <option value="busy">❌ Busy</option>
+        </select>
+        <button id="saveBtn">💾 Save</button>
+      </div>
+
+      <h2>📅 Everyone's Availability</h2>
+      <div id="groupView"></div>
     </div>
 
-    <div class="month-controls">
-      <button id="prevBtn">⏮️</button>
-      <span id="monthLabel">Month YYYY</span>
-      <button id="nextBtn">⏭️</button>
-    </div>
+    <script>
+      const calendarEl = document.getElementById('calendar');
+      const userSelect = document.getElementById('userSelect');
+      const statusSelect = document.getElementById('statusSelect');
+      const saveBtn = document.getElementById('saveBtn');
+      const groupView = document.getElementById('groupView');
+      const monthLabel = document.getElementById('monthLabel');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
 
-    <div id="calendar">
-      <!-- Calendar renders here -->
-    </div>
+      let selectedDate = null;
+      let calendarData = {};
+      let allData = [];
 
-    <div class="status-controls">
-      <label for="statusSelect">Set status for selected day:</label>
-      <select id="statusSelect">
-        <option value="free">✅ Free</option>
-        <option value="maybe">🤔 Maybe</option>
-        <option value="busy">❌ Busy</option>
-      </select>
-      <button id="saveBtn">💾 Save</button>
-    </div>
+      const today = new Date();
+      let currentMonth = today.getMonth();
+      let currentYear = today.getFullYear();
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-    <h2>📅 Everyone's Availability</h2>
-    <div id="groupView"></div>
-  </div>
+      function updateCalendar() {
+        calendarEl.innerHTML = '';
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  <script src="script.js"></script>
-</body>
+        dayNames.forEach(day => {
+          const el = document.createElement('div');
+          el.className = 'day-name';
+          el.textContent = day;
+          calendarEl.appendChild(el);
+        });
+
+        for (let i = 0; i < firstDay; i++) {
+          calendarEl.appendChild(document.createElement('div'));
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const el = document.createElement('div');
+          el.className = 'day';
+          el.textContent = d;
+          el.dataset.date = dateStr;
+
+          if (calendarData[dateStr]) {
+            el.classList.add(calendarData[dateStr]);
+          }
+
+          el.onclick = () => {
+            document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedDate = dateStr;
+          };
+
+          calendarEl.appendChild(el);
+        }
+
+        monthLabel.textContent = `${new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} ${currentYear}`;
+      }
+
+      function loadData() {
+        google.script.run.withSuccessHandler(data => {
+          allData = data;
+          const name = userSelect.value;
+          calendarData = {};
+          data.forEach(entry => {
+            if (entry.name === name) {
+              calendarData[entry.date] = entry.status.toLowerCase();
+            }
+          });
+          updateCalendar();
+          renderGroupView();
+        }).getData();
+      }
+
+      function renderGroupView() {
+        const grouped = {};
+        allData.forEach(entry => {
+          if (!grouped[entry.date]) grouped[entry.date] = [];
+          grouped[entry.date].push(`${entry.name}: ${entry.status}`);
+        });
+
+        let html = '';
+        Object.keys(grouped).sort().forEach(date => {
+          html += `<strong>${date}</strong><br>`;
+          html += grouped[date].map(e => `- ${e}`).join('<br>') + '<br><br>';
+        });
+
+        groupView.innerHTML = html;
+      }
+
+      saveBtn.onclick = () => {
+        if (!selectedDate) {
+          alert("Please select a day.");
+          return;
+        }
+
+        const status = statusSelect.value;
+        calendarData[selectedDate] = status;
+
+        const name = userSelect.value;
+        const availability = Object.entries(calendarData).map(([date, status]) => ({ date, status }));
+
+        google.script.run.withSuccessHandler(() => {
+          alert('Saved!');
+          selectedDate = null;
+          loadData();
+        }).saveData(name, availability);
+      };
+
+      userSelect.onchange = loadData;
+
+      prevBtn.onclick = () => {
+        if (currentMonth === 0) {
+          currentMonth = 11;
+          currentYear--;
+        } else {
+          currentMonth--;
+        }
+        updateCalendar();
+      };
+
+      nextBtn.onclick = () => {
+        if (currentMonth === 11) {
+          currentMonth = 0;
+          currentYear++;
+        } else {
+          currentMonth++;
+        }
+        updateCalendar();
+      };
+
+      loadData();
+    </script>
+  </body>
 </html>
