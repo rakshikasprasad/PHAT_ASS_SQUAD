@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <base target="_top">
+    <title>PHAT ASS SQUAD Calendar 💖</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PHAT ASS SQUAD Calendar</title>
     <style>
       body {
         font-family: 'Quicksand', sans-serif;
@@ -12,7 +11,6 @@
         margin: 0;
         padding: 0;
       }
-
       .container {
         max-width: 800px;
         margin: auto;
@@ -21,12 +19,10 @@
         border-radius: 16px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
       }
-
       h1 {
         color: #ff69b4;
         text-align: center;
       }
-
       .controls {
         display: flex;
         justify-content: center;
@@ -34,18 +30,15 @@
         gap: 10px;
         margin: 10px 0;
       }
-
       #calendar {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 5px;
       }
-
       .day-name {
         font-weight: bold;
         text-align: center;
       }
-
       .day {
         border: 1px solid #ffb6c1;
         border-radius: 8px;
@@ -54,16 +47,13 @@
         cursor: pointer;
         background: #fff;
       }
-
       .day.selected {
         border: 2px solid #ff4081;
         background: #ffe4ec;
       }
-
       .day.free { background-color: #ffe0f0; }
       .day.busy { background-color: #ffcdd2; }
       .day.maybe { background-color: #fff3cd; }
-
       button {
         background: #ff69b4;
         border: none;
@@ -73,11 +63,9 @@
         font-weight: bold;
         cursor: pointer;
       }
-
       button:hover {
         background: #ff4081;
       }
-
       #groupView {
         margin-top: 20px;
         font-size: 0.9rem;
@@ -88,7 +76,6 @@
         background: #fdf1f4;
         border-radius: 8px;
       }
-
       select {
         padding: 5px;
         border-radius: 5px;
@@ -134,6 +121,9 @@
     </div>
 
     <script>
+      const originalURL = "https://script.google.com/macros/s/AKfycbxf4sFlFPhctJHRuVQ9hhZDJB1XtF8kVNehhCmC2-b4_IVOf3iM7uSDj9G2tB3BZWpkYQ/exec";
+      const scriptURL = `https://corsproxy.io/?${encodeURIComponent(originalURL)}`;
+
       const calendarEl = document.getElementById('calendar');
       const userSelect = document.getElementById('userSelect');
       const statusSelect = document.getElementById('statusSelect');
@@ -192,18 +182,24 @@
       }
 
       function loadData() {
-        google.script.run.withSuccessHandler(data => {
-          allData = data;
-          const name = userSelect.value;
-          calendarData = {};
-          data.forEach(entry => {
-            if (entry.name === name) {
-              calendarData[entry.date] = entry.status.toLowerCase();
-            }
+        fetch(scriptURL)
+          .then(res => res.json())
+          .then(data => {
+            allData = data;
+            const name = userSelect.value;
+            calendarData = {};
+            data.forEach(entry => {
+              if (entry.name === name) {
+                calendarData[entry.date] = entry.status.toLowerCase();
+              }
+            });
+            updateCalendar();
+            renderGroupView();
+          })
+          .catch(err => {
+            console.error("Fetch failed", err);
+            alert("Failed to load data. Check script URL or CORS proxy.");
           });
-          updateCalendar();
-          renderGroupView();
-        }).getData();
       }
 
       function renderGroupView() {
@@ -234,11 +230,18 @@
         const name = userSelect.value;
         const availability = Object.entries(calendarData).map(([date, status]) => ({ date, status }));
 
-        google.script.run.withSuccessHandler(() => {
-          alert('Saved!');
-          selectedDate = null;
-          loadData();
-        }).saveData(name, availability);
+        fetch(scriptURL, {
+          method: 'POST',
+          body: JSON.stringify({ name, availability }),
+          headers: { 'Content-Type': 'application/json' }
+        })
+          .then(res => res.text())
+          .then(() => {
+            alert('Availability saved!');
+            selectedDate = null;
+            loadData();
+          })
+          .catch(() => alert("Error saving. Check Google Script CORS headers."));
       };
 
       userSelect.onchange = loadData;
