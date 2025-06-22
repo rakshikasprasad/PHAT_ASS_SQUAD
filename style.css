@@ -1,0 +1,85 @@
+body {
+  font-family: 'Quicksand', sans-serif;
+  margin: 0;
+  background: #ffe6f0;
+  color: #4c1f3d;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  color: #ff69b4;
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.top-controls, .status-controls, .month-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.day-name {
+  font-weight: bold;
+  text-align: center;
+}
+
+.day {
+  border: 1px solid #ffb6c1;
+  border-radius: 8px;
+  padding: 5px;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+}
+
+.day.selected {
+  border: 2px solid #ff4081;
+  background: #ffe4ec;
+}
+
+.day.free { background-color: #ffe0f0; }
+.day.busy { background-color: #ffcdd2; }
+.day.maybe { background-color: #fff3cd; }
+
+button {
+  background: #ff69b4;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ff4081;
+}
+
+#groupView {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  max-height: 300px;
+  overflow-y: auto;
+  text-align: left;
+  padding: 10px;
+  background: #fdf1f4;
+  border-radius: 8px;
+}

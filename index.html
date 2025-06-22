@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PHAT ASS SQUAD Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>💖 PHAT ASS SQUAD Calendar 💖</h1>
+
+    <div class="top-controls">
+      <label for="userSelect">I am:</label>
+      <select id="userSelect">
+        <option>Rakshika</option>
+        <option>Shreya</option>
+        <option>Dhruti</option>
+        <option>Yaamini</option>
+        <option>Medha</option>
+      </select>
+    </div>
+
+    <div class="month-controls">
+      <button id="prevBtn">⏮️</button>
+      <span id="monthLabel">Month YYYY</span>
+      <button id="nextBtn">⏭️</button>
+    </div>
+
+    <div id="calendar">
+      <!-- Calendar renders here -->
+    </div>
+
+    <div class="status-controls">
+      <label for="statusSelect">Set status for selected day:</label>
+      <select id="statusSelect">
+        <option value="free">✅ Free</option>
+        <option value="maybe">🤔 Maybe</option>
+        <option value="busy">❌ Busy</option>
+      </select>
+      <button id="saveBtn">💾 Save</button>
+    </div>
+
+    <h2>📅 Everyone's Availability</h2>
+    <div id="groupView"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
