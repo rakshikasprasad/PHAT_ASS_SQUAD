@@ -1,4 +1,4 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbyl1LHmEbxUB86wgPl26t5Lpntg9yA8cbYlPUHbvxqIlnRQGWMF-AeXDYetaEc0Nk7ZZg/exec'; // Replace with your deployed script URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxf4sFlFPhctJHRuVQ9hhZDJB1XtF8kVNehhCmC2-b4_IVOf3iM7uSDj9G2tB3BZWpkYQ/exec'; // Replace with your deployed script URL
 
 const calendarEl = document.getElementById('calendar');
 const userSelect = document.getElementById('userSelect');
